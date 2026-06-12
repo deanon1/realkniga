@@ -1,0 +1,125 @@
+@startuml Схема базы данных
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+skinparam roundcorner 0
+left to right direction
+
+package "Таблицы (database/migrations)" {
+    entity "users" {
+        +id: BIGINT
+        +name: VARCHAR
+        +email: VARCHAR
+        +password: VARCHAR
+        +phone: VARCHAR
+        +address: VARCHAR
+        +region: VARCHAR
+        +avatar: VARCHAR
+        +is_admin: BOOLEAN
+        +is_active: BOOLEAN
+        +role: VARCHAR
+        +created_at: TIMESTAMP
+        +updated_at: TIMESTAMP
+    }
+
+    entity "books" {
+        +id: BIGINT
+        +title: VARCHAR
+        +author: VARCHAR
+        +genre: VARCHAR
+        +price: DECIMAL
+        +description: TEXT
+        +image: VARCHAR
+        +year: INT
+        +pages: INT
+        +isbn: VARCHAR
+        +publisher: VARCHAR
+        +language: VARCHAR
+        +is_new: BOOLEAN
+        +is_popular: BOOLEAN
+        +created_at: TIMESTAMP
+        +updated_at: TIMESTAMP
+    }
+
+    entity "cart_items" {
+        +id: BIGINT
+        +user_id: BIGINT
+        +book_id: BIGINT
+        +quantity: INT
+        +price: DECIMAL
+        +created_at: TIMESTAMP
+        +updated_at: TIMESTAMP
+    }
+
+    entity "orders" {
+        +id: BIGINT
+        +customer_name: VARCHAR
+        +email: VARCHAR
+        +phone: VARCHAR
+        +address: VARCHAR
+        +region: VARCHAR
+        +total: DECIMAL
+        +user_id: BIGINT
+        +status: VARCHAR
+        +cart: JSON
+        +created_at: TIMESTAMP
+        +updated_at: TIMESTAMP
+    }
+
+    entity "order_items" {
+        +id: BIGINT
+        +order_id: BIGINT
+        +book_id: BIGINT
+        +quantity: INT
+        +price: DECIMAL
+        +created_at: TIMESTAMP
+        +updated_at: TIMESTAMP
+    }
+
+    entity "reviews" {
+        +id: BIGINT
+        +user_id: BIGINT
+        +book_id: BIGINT
+        +order_id: BIGINT
+        +rating: INT
+        +comment: TEXT
+        +is_approved: BOOLEAN
+        +created_at: TIMESTAMP
+        +updated_at: TIMESTAMP
+    }
+
+    entity "service_reviews" {
+        +id: BIGINT
+        +user_id: BIGINT
+        +rating: INT
+        +comment: TEXT
+        +is_approved: BOOLEAN
+        +created_at: TIMESTAMP
+        +updated_at: TIMESTAMP
+    }
+
+    entity "book_recommendations" {
+        +id: BIGINT
+        +user_id: BIGINT
+        +book_id: BIGINT
+        +reason: TEXT
+        +created_at: TIMESTAMP
+        +updated_at: TIMESTAMP
+    }
+}
+
+' Отношения и связи
+users o-- orders
+users o-- cart_items
+users o-- reviews
+users o-- service_reviews
+users o-- book_recommendations
+
+books o-- cart_items
+books o-- order_items
+books o-- reviews
+books o-- book_recommendations
+
+orders o-- order_items
+orders o-- reviews
+@enduml

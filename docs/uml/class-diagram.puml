@@ -1,0 +1,179 @@
+@startuml Диаграмма классов
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+skinparam roundcorner 0
+left to right direction
+
+package "Модели данных (app/Models)" {
+    class User {
+        -id: int
+        -name: String
+        -email: String
+        -password: String
+        -phone: String
+        -address: String
+        -role: String
+        -is_admin: bool
+        -is_active: bool
+        +orders(): HasMany
+        +isAdmin(): bool
+        +isOperator(): bool
+    }
+
+    class Book {
+        -id: int
+        -title: String
+        -author: String
+        -genre: String
+        -price: double
+        -description: String
+        -image: String
+        -year: int
+        -isbn: String
+        -is_new: bool
+        -is_popular: bool
+    }
+
+    class CartItem {
+        -id: int
+        -user_id: int
+        -book_id: int
+        -quantity: int
+        -price: double
+        +book(): BelongsTo
+        +user(): BelongsTo
+    }
+
+    class Order {
+        -id: int
+        -customer_name: String
+        -email: String
+        -phone: String
+        -address: String
+        -total: double
+        -user_id: int
+        -status: String
+        +user(): BelongsTo
+        +items(): HasMany
+    }
+
+    class OrderItem {
+        -id: int
+        -order_id: int
+        -book_id: int
+        -quantity: int
+        -price: double
+        +order(): BelongsTo
+        +book(): BelongsTo
+    }
+
+    class Review {
+        -id: int
+        -user_id: int
+        -book_id: int
+        -order_id: int
+        -rating: int
+        -comment: String
+        -is_approved: bool
+        +user(): BelongsTo
+        +book(): BelongsTo
+        +order(): BelongsTo
+    }
+
+    class ServiceReview {
+        -id: int
+        -user_id: int
+        -rating: int
+        -comment: String
+        -is_approved: bool
+        +user(): BelongsTo
+    }
+
+    class BookRecommendation {
+        -id: int
+        -user_id: int
+        -book_id: int
+        -reason: String
+        +user(): BelongsTo
+        +book(): BelongsTo
+    }
+}
+
+package "Контроллеры (app/Http/Controllers)" {
+    class CartController {
+        +add(id: int)
+        +index()
+        +remove(id: int)
+        +clear()
+        +update(Request, id: int)
+    }
+
+    class OrderController {
+        +create()
+        +store(Request)
+    }
+
+    class CatalogController {
+        +index(Request)
+        +showBookInfo(id: int)
+    }
+
+    class AuthController {
+        +login(Request)
+        +register(Request)
+        +logout()
+    }
+}
+
+package "Админ-контроллеры (app/Http/Controllers/Admin)" {
+    class BookAdminController {
+        +index()
+        +create()
+        +store(Request)
+        +edit(id: int)
+        +update(Request, id: int)
+        +destroy(id: int)
+    }
+
+    class OrderAdminController {
+        +index()
+        +show(id: int)
+        +updateStatus(Request, id: int)
+        +destroy(id: int)
+    }
+
+    class UserController {
+        +index()
+        +show(id: int)
+        +update(Request, id: int)
+        +toggleStatus(id: int)
+    }
+}
+
+' Отношения и связи
+User o-- Order
+User o-- CartItem
+User o-- Review
+User o-- ServiceReview
+User o-- BookRecommendation
+
+Book o-- CartItem
+Book o-- OrderItem
+Book o-- Review
+Book o-- BookRecommendation
+
+Order o-- OrderItem
+Order o-- Review
+
+CartController ..> CartItem
+CartController ..> Book
+OrderController ..> Order
+OrderController ..> OrderItem
+CatalogController ..> Book
+AuthController ..> User
+
+BookAdminController ..> Book
+OrderAdminController ..> Order
+UserController ..> User
+@enduml

@@ -1,0 +1,95 @@
+@startuml Диаграмма последовательности
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+
+actor "Пользователь" as User
+participant "ГлавнаяСтраница" as Home
+participant "КаталогКниг" as Catalog
+participant "Корзина" as Cart
+participant "ОформлениеЗаказа" as Order
+participant "КонтроллерКорзины" as CartController
+participant "КонтроллерЗаказов" as OrderController
+database "БазаДанных" as DB
+
+== Просмотр каталога и поиск ==
+
+User -> Home++ : Открыть сайт
+Home --> User : Отображение главной страницы [1]
+
+User -> Catalog++ : Перейти в каталог
+Catalog -> DB++ : ЗАПРОСИТЬ все книги [2]
+DB --> Catalog-- : Список книг
+Catalog --> User : Отображение каталога с фильтрами [3]
+
+User -> Catalog : Ввести поисковый запрос
+Catalog -> DB++ : ЗАПРОСИТЬ книги по запросу [4]
+DB --> Catalog-- : Результаты поиска
+Catalog --> User : Отображение найденных книг [5]
+
+User -> Catalog : Нажать на книгу
+Catalog -> DB++ : ЗАПРОСИТЬ детали книги [6]
+DB --> Catalog-- : Детали книги
+Catalog --> User : Отображение страницы книги [7]
+
+== Работа с корзиной ==
+
+User -> Catalog : Нажать «Добавить в корзину» [8]
+Catalog -> CartController++ : Добавить книгу
+CartController -> DB++ : ЗАПИСЬ в таблицу товары_корзины [9]
+DB --> CartController-- : Успех
+CartController --> User : Обновление счетчика корзины [10]
+
+User -> Cart++ : Открыть корзину
+Cart -> DB++ : ЗАПРОСИТЬ товары корзины [11]
+DB --> Cart-- : Список товаров
+Cart --> User : Отображение корзины [12]
+
+User -> Cart : Изменить количество товара
+Cart -> CartController++ : Обновить количество
+CartController -> DB++ : ОБНОВИТЬ запись в товары_корзины [13]
+DB --> CartController-- : Успех
+CartController --> User : Обновление итоговой суммы [14]
+
+User -> Cart : Удалить товар
+Cart -> CartController++ : Удалить товар
+CartController -> DB++ : УДАЛИТЬ запись из товары_корзины [15]
+DB --> CartController-- : Подтверждение
+CartController --> User : Обновление корзины [16]
+
+== Оформление заказа ==
+
+User -> Cart : Нажать «Оформить заказ» [17]
+Cart -> Order++ : Перейти к оформлению
+
+User -> Order : Заполнить форму заказа
+User -> Order : Подтвердить заказ
+Order -> OrderController++ : Создать заказ
+OrderController -> DB++ : ЗАПИСЬ в таблицу заказы [18]
+OrderController -> DB++ : ЗАПИСЬ в таблицу позиции_заказа [19]
+DB --> OrderController-- : Успех
+OrderController -> DB++ : ОЧИСТИТЬ товары_корзины пользователя [20]
+DB --> OrderController-- : Корзина очищена
+OrderController --> User : Отображение сообщения об успехе [21]
+
+== AI-рекомендации ==
+
+User -> Home : Нажать «Получить рекомендации» [22]
+Home -> DB++ : ЗАПРОСИТЬ историю заказов [23]
+DB --> Home-- : История заказов
+Home -> DB++ : ЗАПРОСИТЬ похожие книги [24]
+DB --> Home-- : Рекомендуемые книги
+Home --> User : Отображение рекомендаций [25]
+
+== Отзывы о книгах ==
+
+User -> Catalog : Открыть книгу
+User -> Catalog : Нажать «Оставить отзыв» [26]
+Catalog -> DB++ : ЗАПИСЬ в таблицу отзывы [27]
+DB --> Catalog-- : Успех
+Catalog --> User : Отзыв отправлен на модерацию [28]
+
+deactivate Home
+deactivate Catalog
+deactivate Cart
+deactivate Order
+@enduml

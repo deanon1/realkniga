@@ -1,0 +1,85 @@
+@startuml Диаграмма вариантов использования
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+
+actor "Пользователь" as User
+actor "Админ" as Admin
+actor "Оператор" as Operator
+
+rectangle "РеалКнига" {
+    usecase "Авторизоваться" as UC_Auth
+    usecase "Зарегистрироваться" as UC_Register
+    
+    package "Каталог и Поиск" {
+        usecase "Просматривать каталог книг" as UC_Catalog
+        usecase "Искать книги" as UC_Search
+        usecase "Просматривать детали книги" as UC_Details
+    }
+    
+    package "Корзина и Заказы" {
+        usecase "Добавлять в корзину" as UC_AddCart
+        usecase "Управлять корзиной" as UC_ManageCart
+        usecase "Оформлять заказ" as UC_Order
+    }
+    
+    package "Профиль" {
+        usecase "Просматривать профиль" as UC_Profile
+        usecase "Редактировать профиль" as UC_EditProfile
+        usecase "Просматривать историю заказов" as UC_History
+    }
+    
+    package "Отзывы" {
+        usecase "Оставлять отзыв о книге" as UC_BookReview
+        usecase "Оставлять отзыв о сервисе" as UC_ServiceReview
+    }
+    
+    package "AI-ассистент" {
+        usecase "Получать рекомендации книг" as UC_AI
+    }
+    
+    package "Админ-панель" {
+        usecase "Управлять книгами" as UC_AdminBooks
+        usecase "Управлять заказами" as UC_AdminOrders
+        usecase "Управлять пользователями" as UC_AdminUsers
+        usecase "Просматривать статистику" as UC_AdminStats
+        usecase "Модерировать отзывы" as UC_AdminReviews
+    }
+}
+
+User -- UC_Auth
+User -- UC_Register
+
+User -- UC_Catalog
+User -- UC_Search
+User -- UC_Details
+User -- UC_AddCart
+User -- UC_ManageCart
+User -- UC_Order
+User -- UC_Profile
+User -- UC_EditProfile
+User -- UC_History
+User -- UC_BookReview
+User -- UC_ServiceReview
+User -- UC_AI
+
+Admin -- UC_AdminBooks
+Admin -- UC_AdminOrders
+Admin -- UC_AdminUsers
+Admin -- UC_AdminStats
+Admin -- UC_AdminReviews
+
+Operator -- UC_AdminOrders
+Operator -- UC_AdminStats
+
+UC_Order ..> UC_Auth : <<include>>
+UC_Profile ..> UC_Auth : <<include>>
+UC_EditProfile ..> UC_Auth : <<include>>
+UC_History ..> UC_Auth : <<include>>
+UC_BookReview ..> UC_Auth : <<include>>
+UC_ServiceReview ..> UC_Auth : <<include>>
+UC_AddCart ..> UC_Catalog : <<extend>>
+UC_Details ..> UC_Catalog : <<extend>>
+UC_ManageCart ..> UC_AddCart : <<extend>>
+@enduml
